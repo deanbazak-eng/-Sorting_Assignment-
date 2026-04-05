@@ -1,6 +1,7 @@
 #README.md
 
 omer kidron and dean bazak 
+
 The selected algorithms are: Bubble Sort,Merge Sort and Quick Sort
 
 <img width="1000" height="600" alt="result1" src="https://github.com/user-attachments/assets/fa0694bb-25e6-481a-ae7d-756a0c586521" />
@@ -14,8 +15,7 @@ This experiment tests how the algorithms handle arrays that are almost entirely 
 With 20% noise, the array is more disordered than the previous case but still significantly better than a random one. The runtime for Bubble Sort increases compared to the 5% noise experiment
 Even with partial sorting, o(n^2) algorithms like Bubble Sort struggle to compete with recursive algorithms as o(n) grows.
 
-
-
+-------
 Performance Comparison:
 The primary difference between the plots is the efficiency of Bubble Sort, which is highly dependent on the initial order of the array. The recursive algorithms (Merge and Quick Sort) remain consistently fast across all cases.
 
