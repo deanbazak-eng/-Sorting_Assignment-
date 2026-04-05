@@ -1,0 +1,128 @@
+import random
+import time
+import argparse
+import numpy as np
+import matplotlib.pyplot as plt
+
+#part a-Algorithm Implementation  ---
+
+def bubble_sort(arr):
+    n = len(arr)
+    arr_copy = arr.copy() #save---
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr_copy[j] > arr_copy[j + 1]:
+                arr_copy[j], arr_copy[j + 1] = arr_copy[j + 1], arr_copy[j] #swap---
+    return arr_copy
+
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2 #divide by 2---
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = [] #create array
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i]) #add the smaller to the array----
+            i += 1
+        else:
+            result.append(right[j]) #add the smaller to the array---
+            j += 1
+    result.extend(left[i:]) #add the sub array---
+    result.extend(right[j:]) #add the sub array---
+    return result
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+#for a better result in sorted array- pivot=middle element----
+    pivot = arr[len(arr) // 2] 
+#divide to 3 groups by comparing the elemts to the pivot----
+    left = [x for x in arr if x < pivot] 
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right) #recursion for the right, left, and sending the result array---
+
+# --- Part B+C – Comparative Experiment and  Experiment with Noise or Partial Order ---
+
+def generate_array(size, exp_type):
+   # """creating an array according to the type of experiment requested"""
+    if exp_type == 0: # totally random (Part B)
+        return [random.randint(0, 1000000) for _ in range(size)]
+    
+    # almost sorted array(Part C)
+    arr = list(range(size)) 
+    noise_percent = 5 if exp_type == 1 else 20 #add noise---
+    num_swaps = int(size * (noise_percent / 100))
+    for _ in range(num_swaps):
+        idx1, idx2 = random.randint(0, size-1), random.randint(0, size-1)
+        arr[idx1], arr[idx2] = arr[idx2], arr[idx1]
+    return arr
+
+def run_experiment(algo, size, exp_type): #Measure only the sorting time---- 
+    arr = generate_array(size, exp_type)
+    start_time = time.time()
+    algo(arr)
+    return time.time() - start_time
+
+def plot_results(results, sizes, filename, title): #create visual results
+    plt.figure(figsize=(10, 6))
+    for name, data in results.items():
+        means = np.array(data['means'])
+        stds = np.array(data['stds'])
+        plt.plot(sizes, means, label=name, marker='o')
+        plt.fill_between(sizes, means - stds, means + stds, alpha=0.2)
+    
+    plt.xlabel('Array size (n)')
+    plt.ylabel('Runtime (seconds)')
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(filename)
+    print(f"Saved plot to {filename}")
+
+# ---part D- Simple User Interface (Command Line Arguments)  ---
+
+def main(): 
+    parser = argparse.ArgumentParser(description='Sorting Algorithms Experiment')
+#settings----
+    parser.add_argument('-a', nargs='+', type=int, required=True, help='Algorithm IDs (1:Bubble, 4:Merge, 5:Quick)')
+    parser.add_argument('-s', nargs='+', type=int, required=True, help='Array sizes')
+    parser.add_argument('-e', type=int, choices=[0, 1, 2], default=0, help='0:Random, 1:5% Noise, 2:20% Noise')
+    parser.add_argument('-r', type=int, default=1, help='Number of repetitions')
+    
+    args = parser.parse_args()
+
+    # Mapping numbers to functions [cite: 71-76]
+    algo_map = {1: bubble_sort, 4: merge_sort, 5: quick_sort}
+    selected_algos = {algo_map[i].__name__: algo_map[i] for i in args.a if i in algo_map}
+
+    results = {}
+    for name, algo in selected_algos.items():
+        results[name] = {'means': [], 'stds': []}
+        for size in args.s:
+            times = [run_experiment(algo, size, args.e) for _ in range(args.r)]
+            results[name]['means'].append(np.mean(times))
+            results[name]['stds'].append(np.std(times))
+
+   #Determining the file name and title according to the type of experiment [cite: 34, 58, 67-69]
+    if args.e == 0:
+        filename = "result1.png"
+        title = "Runtime Comparison (Random Arrays)"
+    elif args.e == 1:
+        filename = "result2_5_noise.png"
+        title = "Runtime Comparison (Nearly Sorted, noise=5%)"
+    elif args.e == 2:
+        filename = "result2_20_noise.png"
+        title = "Runtime Comparison (Nearly Sorted, noise=20%)"
+    
+    #Calling the drawing function with the name and title we defined
+    plot_results(results, args.s, filename, title)
+
+if __name__ == "__main__":
+    main()
