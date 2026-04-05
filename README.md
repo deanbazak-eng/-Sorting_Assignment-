@@ -15,6 +15,7 @@ With 20% noise, the array is more disordered than the previous case but still si
 Even with partial sorting, o(n^2) algorithms like Bubble Sort struggle to compete with recursive algorithms as o(n) grows.
 
 
+
 Performance Comparison:
 The primary difference between the plots is the efficiency of Bubble Sort, which is highly dependent on the initial order of the array. The recursive algorithms (Merge and Quick Sort) remain consistently fast across all cases.
 
