@@ -1,4 +1,4 @@
-<img width="816" height="513" alt="image" src="https://github.com/user-attachments/assets/96876bcc-95c6-4476-95cd-a96cbe52038e" /># -Sorting_Assignment-
+#README.md
 omer kidron and dean bazak 
 The selected algorithms are: Bubble Sort,Merge Sort and Quick Sort
 
